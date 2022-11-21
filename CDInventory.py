@@ -20,12 +20,37 @@ class DataProcessor:
     # TODO add functions for processing here
     @staticmethod
     def new_album_add(aIntID,aTitle,aArtist,aTable):
+        """Function to add an entry to a list of dictionaries
+
+        Composes a new dictionary to append to an existing list of dictionaries.
+
+        Args:
+            aIntID (Int): the index of this new album 
+            aTitle (Str): the title of the new album
+            aArtist (Str): the artist of the new album
+            aTable (list of dict): 2D data structure (list of dicts) that holds the data during runtime
+
+        Returns:
+            Updated list of dictionaries table.
+        """
         addRow = {'ID': aIntID, 'Title': aTitle, 'Artist': aArtist}
         aTable.append(addRow)
         return aTable
     
     @staticmethod
     def delete_album(searchID,dTable):
+        """Function to remove an entry from a list of dictionaries
+
+        Loops through the list of dictionaries seeking an entry that matches a
+        particular ID and if found deletes it or reports otherwise.
+
+        Args:
+            searchID (Int): the index within the inventory to find and delete 
+            dTable (list of dict): 2D data structure (list of dicts) that holds the data during runtime
+
+        Returns:
+            None.
+        """
         intRowNr = -1
         blnCDRemoved = False
         for row in dTable:
@@ -68,6 +93,17 @@ class FileProcessor:
     @staticmethod
     def write_file(file_name, wTable):
         # TODO Add code here
+        """Function to write the inventory to a file
+
+        Unpacks dictionary, composes strings and concatenates them and writes
+        that to a file.
+
+        Args:
+            file_name (Str): name of the inventory file
+
+        Returns:
+            None.
+        """
         objFile = open(file_name, 'w')
         for row in wTable:
             lstValues = list(row.values())
@@ -132,6 +168,15 @@ class IO:
     # TODO add I/O functions as needed
     @staticmethod
     def new_album_query():
+        """Queries user for new album details
+
+        Args:
+            None.
+
+        Returns:
+            List of user inputs (Int, Str, Str).
+
+        """
         fID = input('Enter ID: ').strip()
         fTitle = input('What is the CD\'s title? ').strip()
         fArtist = input('What is the Artist\'s name? ').strip() # lol
