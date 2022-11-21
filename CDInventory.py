@@ -11,13 +11,14 @@
 strChoice = '' # User input
 lstTbl = []  # list of lists to hold data
 dicRow = {}  # list of data row
-strFileName = 'CDInventory.txt'  # data storage file
+strFileName = 'CDInventory.txt'  # data storage file (which must pre-exist I guess)
 objFile = None  # file object
 
 
 # -- PROCESSING -- #
 class DataProcessor:
-    # TODO add functions for processing here
+    """Processing the data within lstTbl/copy"""
+
     @staticmethod
     def new_album_add(aIntID,aTitle,aArtist,aTable):
         """Function to add an entry to a list of dictionaries
@@ -34,9 +35,9 @@ class DataProcessor:
             Updated list of dictionaries table.
         """
         addRow = {'ID': aIntID, 'Title': aTitle, 'Artist': aArtist}
-        aTable.append(addRow)
+        aTable.append(addRow) # I could use lstTbl directly, but this feels like safer practice
         return aTable
-    
+
     @staticmethod
     def delete_album(searchID,dTable):
         """Function to remove an entry from a list of dictionaries
@@ -69,7 +70,7 @@ class FileProcessor:
     """Processing the data to and from text file"""
 
     @staticmethod
-    def read_file(file_name, table):
+    def read_file(file_name, rTable): # Renamed variable to better match my other namings
         """Function to manage data ingestion from file to a list of dictionaries
 
         Reads the data from file identified by file_name into a 2D table
@@ -82,17 +83,16 @@ class FileProcessor:
         Returns:
             None.
         """
-        table.clear()  # this clears existing data and allows to load data from file
+        rTable.clear()  # this clears existing data and allows to load data from file
         objFile = open(file_name, 'r')
         for line in objFile:
             data = line.strip().split(',')
             dicRow = {'ID': int(data[0]), 'Title': data[1], 'Artist': data[2]}
-            table.append(dicRow)
+            rTable.append(dicRow)
         objFile.close()
 
     @staticmethod
     def write_file(file_name, wTable):
-        # TODO Add code here
         """Function to write the inventory to a file
 
         Unpacks dictionary, composes strings and concatenates them and writes
@@ -164,8 +164,7 @@ class IO:
         for row in table:
             print('{}\t{} (by:{})'.format(*row.values()))
         print('======================================')
-        
-    # TODO add I/O functions as needed
+
     @staticmethod
     def new_album_query():
         """Queries user for new album details
@@ -183,17 +182,16 @@ class IO:
         fIntID = int(fID)
         newAlbumInput = [fIntID,fTitle,fArtist]
         return newAlbumInput
-        
+
 
 # 1. When program starts, read in the currently saved Inventory
-FileProcessor.read_file(strFileName, lstTbl)
+FileProcessor.read_file(strFileName, lstTbl) # I think this should be an option since it crashes if the file isn't there...
 
-# 2. start main loop
+# 2. Start main loop
 while True:
     # 2.1 Display Menu to user and get choice
     IO.print_menu()
     strChoice = IO.menu_choice()
-
     # 3. Process menu selection
     # 3.1 process exit first
     if strChoice == 'x':
@@ -213,13 +211,9 @@ while True:
     # 3.3 process add a CD
     elif strChoice == 'a':
         # 3.3.1 Ask user for new ID, CD Title and Artist
-        # TODO move IO code into function
         newEntry = IO.new_album_query()
-
         # 3.3.2 Add item to the table
-        # TODO move processing code into function
-        lstTbl = DataProcessor.new_album_add(newEntry[0],newEntry[1],newEntry[2],lstTbl) # Do we write lstTbl twice, what is the ref/scope on that
-        
+        lstTbl = DataProcessor.new_album_add(newEntry[0],newEntry[1],newEntry[2],lstTbl) # Could pass dictionary or tuple or something directly but this feels more easily future modifiable?
         IO.show_inventory(lstTbl)
         continue  # start loop back at top.
     # 3.4 process display current inventory
@@ -234,9 +228,7 @@ while True:
         # 3.5.1.2 ask user which ID to remove
         intIDDel = int(input('Which ID would you like to delete? ').strip())
         # 3.5.2 search thru table and delete CD
-        # TODO move processing code into function
         DataProcessor.delete_album(intIDDel, lstTbl)
-
         IO.show_inventory(lstTbl)
         continue  # start loop back at top.
     # 3.6 process save inventory to file
@@ -247,16 +239,10 @@ while True:
         # 3.6.2 Process choice
         if strYesNo == 'y':
             # 3.6.2.1 save data
-            # TODO move processing code into function
             FileProcessor.write_file(strFileName, lstTbl)
-
         else:
             input('The inventory was NOT saved to file. Press [ENTER] to return to the menu.')
         continue  # start loop back at top.
     # 3.7 catch-all should not be possible, as user choice gets vetted in IO, but to be safe:
     else:
         print('General Error')
-
-
-
-
